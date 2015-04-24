@@ -13,6 +13,7 @@ class GameBoard
 		ships = [:aircraft_carrier, :battleship, :submarine, :destroyer, :cruiser, :patrol_boat].map { |name|
 			Ship.new(ships)
 		}
+		place_ships
 	end
 
 	def print_board
@@ -84,9 +85,6 @@ class GameBoard
 		self.ships.each do |ship|
 			place_ship(ship)
 		end
-
-
-		
 	end
 
 	def can_place_direction?(direction)
