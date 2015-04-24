@@ -1,37 +1,56 @@
-require 'ship'
 
 class GameBoard
 
 	attr_accessor :board
 	attr_accessor :ships
-	attr_accessor :taken_spaces
+	attr_accessor :hits
 
 	DIRECTIONS = [:up, :down, :left, :right]
 
 	def initialize
 		reset_board
-		ships = [:aircraft_carrier, :battleship, :submarine, :destroyer, :cruiser, :patrol_boat].map { |name|
-			Ship.new(ships)
+    self.ships = [:aircraft_carrier, :battleship, :submarine, :destroyer, :cruiser, :patrol_boat].map { |name|
+			Ship.new(name)
 		}
+    @hits = Array.new(16) { Array.new(16) }
 		place_ships
 	end
 
-	def print_board
+  def self.print_board(board_to_print)
     print_row('  ', ('a'..'p').to_a)
     puts "="*68
-    board.each_with_index do |row, i|
+    board_to_print.each_with_index do |row, i|
       print_row(i+1, row)
       print_spacer_row
     end
 	end
 
-  def print_row(row_number, row)
+  def self.print_row(row_number, row)
     row_number = format('%02d', row_number) if row_number.is_a? Integer
-    puts row.unshift(row_number).join(' | ') + " |"
+    printable_row = [ row_number ] + row.map { |c| c ? c : " "}
+    puts printable_row.join(' | ') + " |"
   end
 
-  def print_spacer_row
+  def self.print_spacer_row
     puts "---+" * 17
+  end
+
+  def guess(horizontal, vertical)
+		horizontal = letter_to_number(horizontal)
+    vertical = vertical - 1
+    unless @board[vertical][horizontal].nil?
+      @hits[vertical][horizontal] = 'X'
+    else
+      @hits[vertical][horizontal] = 'O'
+    end
+  end
+
+  def print_hits
+    GameBoard.print_board(@hits)
+  end
+
+  def print_key
+    GameBoard.print_board(@board)
   end
 
 	def reset_board
@@ -43,38 +62,33 @@ class GameBoard
 		letter_values[letter]
 	end
 
-	def guess(position)
-		horizontal = letter_to_number(position[0])
-		@board[horizontal][position[1].to_i]
-	end
-
 	def place_ship(ship)
 		horizontal = rand(0..15)
 		vertical = rand(0..15)
-		direction = DIRECTIONS[rand(0,3)]
+    direction = DIRECTIONS[rand(0..3)]
 		case direction
 		when :up
 			if can_place_up(ship, horizontal, vertical)
 				place_this_ship(ship, horizontal, vertical, :up)
-			else 
+			else
 				place_ship(ship)
 			end
 		when :right
 			if can_place_right(ship, horizontal, vertical)
 				place_this_ship(ship, horizontal, vertical, :right)
-			else 
+			else
 				place_ship(ship)
 			end
 		when :down
 			if can_place_down(ship, horizontal, vertical)
 				place_this_ship(ship, horizontal, vertical, :down)
-			else 
+			else
 				place_ship(ship)
 			end
 		when :left
 			if can_place_left(ship, horizontal, vertical)
 				place_this_ship(ship, horizontal, vertical, :left)
-			else 
+			else
 				place_ship(ship)
 			end
 		end
@@ -105,8 +119,8 @@ class GameBoard
 	end
 
 	def can_place_up(ship, horizontal, vertical)
-		return false unless horizontal - ship.size >= 0 
-			(0..ship.size).each do |i| 
+		return false unless horizontal - ship.size >= 0
+			(0..ship.size).each do |i|
 				return false unless @board[horizontal - i][vertical].nil?
 			end
 			return true
@@ -114,7 +128,7 @@ class GameBoard
 
 	def can_place_right(ship, horizontal, vertical)
 		return false unless vertical + ship.size <= 15
-			(0..ship.size).each do |i| 
+			(0..ship.size).each do |i|
 				return false unless @board[horizontal][vertical + i]
 			end
 			return true
@@ -122,7 +136,7 @@ class GameBoard
 
 	def can_place_down(ship, horizontal, vertical)
 		return false unless horizontal + ship.size <= 15
-			(0..ship.size).each do |i| 
+			(0..ship.size).each do |i|
 				return false unless @board[horizontal + i][vertical]
 			end
 			return true
@@ -130,7 +144,7 @@ class GameBoard
 
 	def can_place_left(ship, horizontal, vertical)
 		return false unless vertical - ship.size >= 0
-			(0..ship.size).each do |i| 
+			(0..ship.size).each do |i|
 				return false unless @board[horizontal][vertical - i]
 			end
 			return true
@@ -140,19 +154,19 @@ class GameBoard
 
 		case direction
 		when :up
-			(0..ship.size).each do |i| 
+			(0..ship.size).each do |i|
 				@board[horizontal - i][vertical] = ship
 			end
 		when :right
-			(0..ship.size).each do |i| 
+			(0..ship.size).each do |i|
 				@board[horizontal][vertical + i] = ship
 			end
 		when :down
-			(0..ship.size).each do |i| 
+			(0..ship.size).each do |i|
 				@board[horizontal + i][vertical] = ship
 			end
 		when :left
-			(0..ship.size).each do |i| 
+			(0..ship.size).each do |i|
 				@board[horizontal][vertical - i] = ship
 			end
 		end

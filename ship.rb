@@ -4,7 +4,7 @@ class Ship
 	attr_accessor :points
 	attr_accessor :ship
 	attr_accessor :name, :single_char
-	
+
 	ATTRIBUTES = {
 		aircraft_carrier: [5, 20, 'a'],
 		battleship: [4, 12, 'b'],
@@ -19,12 +19,13 @@ class Ship
 	end
 
 	def initialize(name)
-		initialize_ship
+		initialize_ship(name)
 		self.name = name
 	end
 
 	def initialize_ship(name)
 		size, points, c = ATTRIBUTES[name]
+
 		self.size = size
 		self.points = points
 		self.single_char = c
