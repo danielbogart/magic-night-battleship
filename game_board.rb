@@ -2,20 +2,34 @@ require 'ship'
 
 class GameBoard
 
-	attr_accessor :board 
+	attr_accessor :board
 	attr_accessor :ships
 	attr_accessor :taken_spaces
 
 	def initialize
 		reset_board
-		ships = [:aircraft_carrier, :battleship, :submarine, :destroyer, :cruiser, :patrol_boat].map { |name| 
-			Ship.new(ships) 
+		ships = [:aircraft_carrier, :battleship, :submarine, :destroyer, :cruiser, :patrol_boat].map { |name|
+			Ship.new(ships)
 		}
 	end
-	
-	def print_board
 
+	def print_board
+    print_row('  ', ('a'..'p').to_a)
+    puts "="*68
+    board.each_with_index do |row, i|
+      print_row(i+1, row)
+      print_spacer_row
+    end
 	end
+
+  def print_row(row_number, row)
+    row_number = format('%02d', row_number) if row_number.is_a? Integer
+    puts row.unshift(row_number).join(' | ') + " |"
+  end
+
+  def print_spacer_row
+    puts "---+" * 17
+  end
 
 	def reset_board
 		@board = Array.new(16) { Array.new(16) }
@@ -57,31 +71,31 @@ class GameBoard
 	def can_place_up(ship, horizontal, vertical)
 		if horizontal - ship.size >= 0
 			puts true
-		else 
+		else
 			puts false
 		end
-	end 
+	end
 
 	def can_place_right(ship, horizontal, vertical)
 		if vertical + ship.size <= 15
 			puts true
-		else 
+		else
 			puts false
 		end
 	end
-	
+
 	def can_place_down(ship, horizontal, vertical)
 		if horizontal + ship.size <= 15
 			puts true
-		else 
+		else
 			puts false
 		end
 	end
-	
+
 	def can_place_left(ship, horizontal, vertical)
 		if vertical - ship.size >= 0
 			puts true
-		else 
+		else
 			puts false
 		end
 	end
