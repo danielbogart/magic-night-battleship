@@ -26,7 +26,7 @@ def get_guesses
         guesses.push coordinates
         good_guess = true
       else
-        puts "bad guess!"
+        puts 'bad guess!'
       end
     end
   end
@@ -35,8 +35,8 @@ end
 
 6.times do
   guesses = get_guesses
-  guesses.each do |h,v|
-    board.guess(h,v)
+  guesses.each do |h, v|
+    board.guess(h, v)
   end
   board.print_hits
 end
